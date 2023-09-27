@@ -7,7 +7,7 @@ format:
 	cargo +nightly fmt
 
 server:
-	cargo run --release --bin server
+	cargo run --release
 
 lint:
 	cargo clippy
