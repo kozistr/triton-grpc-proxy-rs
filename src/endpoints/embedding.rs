@@ -1,13 +1,14 @@
 use std::collections::HashMap;
 
+use async_once::AsyncOnce;
 use lazy_static::lazy_static;
 use ndarray::{Array, Array1};
 use triton_client::inference::model_infer_request::{InferInputTensor, InferRequestedOutputTensor};
 use triton_client::inference::{ModelInferRequest, ModelInferResponse};
 
 lazy_static! {
-    pub static ref CLIENT: triton_client::Client = {
-        tokio::runtime::Runtime::new().unwrap().block_on(async {
+    pub static ref CLIENT: AsyncOnce<triton_client::Client> = {
+        AsyncOnce::new(async {
             triton_client::Client::new("http://127.0.0.1:8001", None)
                 .await
                 .unwrap()
@@ -40,7 +41,7 @@ async fn inference(queries: Vec<String>) -> ModelInferResponse {
             .collect(),
     };
 
-    CLIENT.model_infer(request).await.unwrap()
+    CLIENT.get().await.model_infer(request).await.unwrap()
 }
 
 pub async fn get_embedding(queries: Vec<String>) -> Vec<Array1<f32>> {
