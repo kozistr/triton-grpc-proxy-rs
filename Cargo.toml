@@ -22,6 +22,7 @@ serde = { version = "^1.0", features = ["derive"] }
 serde_json = "^1.0"
 env_logger = "^0.10.0"
 lazy_static = "^1.4.0"
+async_once = "^0.2.6"
 triton-client = { git = "https://github.com/octoml/triton-client-rs.git" }
 
 [build-dependencies]
