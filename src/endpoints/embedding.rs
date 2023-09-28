@@ -1,18 +1,21 @@
 use std::collections::HashMap;
-use std::error::Error;
 
+use lazy_static::lazy_static;
 use ndarray::{Array, Array1};
-use tonic::Status;
 use triton_client::inference::model_infer_request::{InferInputTensor, InferRequestedOutputTensor};
 use triton_client::inference::{ModelInferRequest, ModelInferResponse};
 
-type InferResponse = Result<ModelInferResponse, triton_client::client::Error>;
-
-thread_local! {
-    pub static TRITON_CLIENT: triton_client::Client = triton_client::Client::new("http://192.168.219.107:8001", None).await?;
+lazy_static! {
+    pub static ref CLIENT: triton_client::Client = {
+        tokio::runtime::Runtime::new().unwrap().block_on(async {
+            triton_client::Client::new("http://127.0.0.1:8001", None)
+                .await
+                .unwrap()
+        })
+    };
 }
 
-async fn request(queries: Vec<String>) -> InferResponse {
+async fn inference(queries: Vec<String>) -> ModelInferResponse {
     let inputs: Vec<InferInputTensor> = vec![InferInputTensor {
         name: "text".into(),
         shape: vec![queries.len() as i64, 1],
@@ -37,38 +40,18 @@ async fn request(queries: Vec<String>) -> InferResponse {
             .collect(),
     };
 
-    match TRITON_CLIENT.model_infer(request).await {
-        Ok(response) => Ok(response),
-        Err(e) => Err(e),
-    }
-}
-
-async fn parse_inference_response(
-    response: InferResponse,
-) -> Result<Vec<Array1<f32>>, Box<dyn Error + Send + Sync>> {
-    match response {
-        Ok(response) => {
-            let vectors = response
-                .raw_output_contents
-                .iter()
-                .map(|r: &Vec<u8>| {
-                    let e: &[f32] = bytemuck::cast_slice::<u8, f32>(r.as_slice());
-                    Array::from_vec(e.to_vec())
-                })
-                .collect::<Vec<Array1<f32>>>();
-            Ok(vectors)
-        },
-        Err(e) => Err(Box::new(e)),
-    }
+    CLIENT.model_infer(request).await.unwrap()
 }
 
 pub async fn get_embedding(queries: Vec<String>) -> Vec<Array1<f32>> {
-    let embedding_request = request(queries);
+    let response: ModelInferResponse = inference(queries).await;
 
-    let response: ModelInferResponse = match embedding_request.await {
-        Ok(res) => res,
-        Err(e) => return Err(Status::internal(e.to_string())),
-    };
-
-    parse_inference_response(Ok(response)).await.unwrap()
+    response
+        .raw_output_contents
+        .iter()
+        .map(|r: &Vec<u8>| {
+            let e: &[f32] = bytemuck::cast_slice::<u8, f32>(r.as_slice());
+            Array::from_vec(e.to_vec())
+        })
+        .collect::<Vec<Array1<f32>>>()
 }
