@@ -22,8 +22,6 @@ Cargo.lock
 *.svg
 
 # data files
-models/
-data/
 *.json
 *.csv
 *.txt
