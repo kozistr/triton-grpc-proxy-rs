@@ -1,6 +1,7 @@
 use actix_web::{web, App, HttpResponse, HttpServer};
 use mimalloc::MiMalloc;
 
+use crate::constants::SERVER_PORT;
 use crate::endpoints::get_v1_embedding;
 
 mod constants;
@@ -26,7 +27,7 @@ async fn main() -> std::io::Result<()> {
             .route("/health", web::get().to(get_health_status))
             .service(get_v1_embedding)
     })
-    .bind(("127.0.0.1", 8080))?
+    .bind(("127.0.0.1", SERVER_PORT))?
     .run()
     .await
 }
