@@ -19,14 +19,15 @@ lazy_static! {
 }
 
 fn serialize_to_byte_string(queries: Vec<String>) -> Vec<u8> {
-    queries
-        .into_iter()
-        .flat_map(|query: String| {
-            let mut len_bytes: Vec<u8> = (query.len() as u32).to_le_bytes().to_vec();
-            len_bytes.extend_from_slice(query.as_bytes());
-            len_bytes
-        })
-        .collect::<Vec<u8>>()
+    let total_len: usize = queries.iter().map(|query| 4 + query.len()).sum();
+    let mut len_bytes: Vec<u8> = Vec::with_capacity(total_len);
+
+    for query in queries {
+        len_bytes.extend_from_slice(&(query.len() as u32).to_le_bytes());
+        len_bytes.extend_from_slice(query.as_bytes());
+    }
+
+    len_bytes
 }
 
 async fn inference(queries: Vec<String>) -> ModelInferResponse {
