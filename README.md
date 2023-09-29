@@ -13,6 +13,9 @@ $ make server
 
 * endpoint : `http://[url]:8080`
 
+% currently, `url` and `port` for proxy and triton gRPC server are hard-coded.
+% embedding dimenstion is also fixed with value `2048`.
+
 ### health
 
 * GET `/health`
