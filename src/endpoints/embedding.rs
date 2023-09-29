@@ -26,9 +26,9 @@ async fn inference(queries: Vec<String>) -> ModelInferResponse {
     }];
 
     let request: ModelInferRequest = ModelInferRequest {
-        id: "".into(),
         model_name: "model".into(),
         model_version: 1.to_string(),
+        id: "".into(),
         parameters: HashMap::new(),
         inputs,
         outputs: vec![InferRequestedOutputTensor {
