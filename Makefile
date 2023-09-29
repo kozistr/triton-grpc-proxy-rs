@@ -1,4 +1,4 @@
-.PHONY: format client server builder lint
+.PHONY: update format server lint
 
 update:
 	cargo upgrade
