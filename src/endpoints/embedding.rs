@@ -20,10 +20,11 @@ lazy_static! {
 
 fn serialize_to_byte_string(queries: Vec<String>) -> Vec<u8> {
     queries
-        .iter()
-        .flat_map(|query: &String| {
-            let len_bytes: Vec<u8> = (query.len() as u32).to_le_bytes().to_vec();
-            len_bytes.into_iter().chain(query.as_bytes().to_vec())
+        .into_iter()
+        .flat_map(|query: String| {
+            let mut len_bytes: Vec<u8> = (query.len() as u32).to_le_bytes().to_vec();
+            len_bytes.extend_from_slice(query.as_bytes());
+            len_bytes
         })
         .collect::<Vec<u8>>()
 }
@@ -37,8 +38,6 @@ async fn inference(queries: Vec<String>) -> ModelInferResponse {
         contents: None,
     }];
 
-    let serialized_queries: Vec<Vec<u8>> = vec![serialize_to_byte_string(queries)];
-
     let request: ModelInferRequest = ModelInferRequest {
         model_name: "model".into(),
         model_version: 1.to_string(),
@@ -49,7 +48,7 @@ async fn inference(queries: Vec<String>) -> ModelInferResponse {
             name: "embedding".into(),
             parameters: HashMap::new(),
         }],
-        raw_input_contents: serialized_queries,
+        raw_input_contents: vec![serialize_to_byte_string(queries)],
     };
 
     CLIENT.get().await.model_infer(request).await.unwrap()
@@ -60,17 +59,19 @@ pub async fn get_embedding(queries: Vec<String>) -> Array2<f32> {
 
     let response: ModelInferResponse = inference(queries).await;
 
-    let flatten_vectors = response
+    let flatten_vectors: Vec<Array1<f32>> = response
         .raw_output_contents
-        .iter()
-        .map(|r: &Vec<u8>| {
+        .into_iter()
+        .map(|r: Vec<u8>| {
             let e: &[f32] = bytemuck::cast_slice::<u8, f32>(r.as_slice());
-            Array::from_vec(e.to_vec())
+            Array::from_vec(e.to_owned())
         })
         .collect::<Vec<Array1<f32>>>();
 
-    flatten_vectors[0]
-        .clone()
+    flatten_vectors
+        .first()
+        .expect("empty vectors")
+        .to_owned()
         .into_shape((batch_size, V1_EMBEDDING_SIZE))
-        .unwrap()
+        .expect("failed to reshape")
 }
