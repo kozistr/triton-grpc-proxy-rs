@@ -1,10 +1,14 @@
 use actix_web::{web, App, HttpResponse, HttpServer};
+use mimalloc::MiMalloc;
 
 use crate::endpoints::get_v1_embedding;
 
 mod constants;
 mod endpoints;
 mod models;
+
+#[global_allocator]
+static GLOBAL: MiMalloc = MiMalloc;
 
 async fn get_health_status() -> HttpResponse {
     HttpResponse::Ok()
