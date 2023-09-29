@@ -18,13 +18,12 @@ $ make server
 
 ## API Specs
 
-* endpoint : `http://[url]:8080`
+* endpoint : `http://127.0.0.1:8080`
   * triton gRPC server: `127.0.0.1:8001`
   * proxy server: `127.0.0.1:8080`
 
-% Currently, `url` and `port` for proxy and triton gRPC server are hard-coded.
-
-% Embedding dimension is a fixed value `2048`.
+* Currently, `url` and `port` for proxy and triton gRPC server are hard-coded in [constants.rs](https://github.com/kozistr/triton-grpc-proxy-rs/blob/main/src/constants/mod.rs).
+* Embedding dimension is a fixed value `2048`.
 
 ### health
 
@@ -69,15 +68,18 @@ $ curl -H "Content-type:application/json" -X POST http://127.0.0.1:8080/v1/embed
   * request : end to end latency
   * model : only triton gRPC server latency (preprocess + tokenize + model)
   * processing : request - model latency
+    * json de/serialization
+    * serialization (byte string, float vector)
+    * cast & reshape 2d vectors
 
 | batch size |  request  |   model   | processing |
 |    :---:   |   :---:   |   :---:   |    :---:   |
-|      8     |  123.2 ms |  123.0 ms |    0.2 ms  |
-|     16     |  215.5 ms |  215.3 ms |    0.2 ms  |
-|     32     |  331.8 ms |  331.6 ms |    0.2 ms  |
-|     64     |  580.4 ms |  580.1 ms |    0.3 ms  |
-|    128     | 1050.4 ms | 1050.0 ms |    0.4 ms  |
-|    256     | 2090.2 ms | 2089.1 ms |    1.1 ms  |
+|      8     |   45.2 ms |   43.4 ms |    1.8 ms  |
+|     16     |   77.1 ms |   74.7 ms |    2.4 ms  |
+|     32     |  115.8 ms |  111.6 ms |    4.2 ms  |
+|     64     |  190.1 ms |  183.1 ms |    7.0 ms  |
+|    128     |  361.6 ms |  350.0 ms |   11.6 ms  |
+|    256     |  711.1 ms |  688.5 ms |   22.6 ms  |
 
 ## Maintainer
 
