@@ -2,6 +2,7 @@ use actix_web::{App, HttpServer};
 
 use crate::endpoints::get_v1_embedding;
 
+mod constants;
 mod endpoints;
 mod models;
 
