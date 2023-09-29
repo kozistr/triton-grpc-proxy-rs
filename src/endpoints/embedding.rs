@@ -51,7 +51,12 @@ async fn inference(queries: Vec<String>) -> ModelInferResponse {
         raw_input_contents: vec![serialize_to_byte_string(queries)],
     };
 
-    CLIENT.get().await.model_infer(request).await.unwrap()
+    CLIENT
+        .get()
+        .await
+        .model_infer(request)
+        .await
+        .expect("failed to inference")
 }
 
 pub async fn get_embedding(queries: Vec<String>) -> Array2<f32> {
