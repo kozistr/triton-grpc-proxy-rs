@@ -1,6 +1,6 @@
-# triton-grpc-proxy
+# triton-grpc-proxy-rs
 
-proxy server for triton gRPC inference server
+proxy server for triton gRPC inference server in Rust
 
 ## Build
 
