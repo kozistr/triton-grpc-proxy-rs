@@ -60,7 +60,7 @@ pub async fn get_embedding(queries: Vec<String>) -> Array2<f32> {
 
     let response: ModelInferResponse = inference(queries).await;
 
-    let flattend_vectors = response
+    let flatten_vectors = response
         .raw_output_contents
         .iter()
         .map(|r: &Vec<u8>| {
@@ -69,7 +69,7 @@ pub async fn get_embedding(queries: Vec<String>) -> Array2<f32> {
         })
         .collect::<Vec<Array1<f32>>>();
 
-    flattend_vectors[0]
+    flatten_vectors[0]
         .clone()
         .into_shape((batch_size, V1_EMBEDDING_SIZE))
         .unwrap()
