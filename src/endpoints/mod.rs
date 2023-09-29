@@ -1,6 +1,7 @@
 pub mod embedding;
 
 use actix_web::{post, HttpResponse, Responder};
+use ndarray::Array2;
 use serde_json::from_str;
 
 use crate::endpoints::embedding::get_embedding;
@@ -15,7 +16,7 @@ pub async fn get_v1_embedding(body: String) -> impl Responder {
         Err(_) => return HttpResponse::BadRequest().finish(),
     };
 
-    let embeddings = get_embedding(queries).await;
+    let embeddings: Array2<f32> = get_embedding(queries).await;
 
     let responses: Vec<EmbeddingResponse> = embeddings
         .axis_iter(ndarray::Axis(0))
