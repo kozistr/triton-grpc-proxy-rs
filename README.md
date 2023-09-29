@@ -9,12 +9,22 @@ $ export RUSTFLAGS="-C target-feature=native"
 $ make server
 ```
 
+## Architecture
+
+1. recieve request(s) from the user.
+    * list of `text (String)` in this case.
+2. request the Triton gRPC server to get embeddings.
+3. post-process (cast and reshape) the embeddings and returns to the users.
+
 ## API Specs
 
 * endpoint : `http://[url]:8080`
+  * triton gRPC server: `127.0.0.1:8001`
+  * proxy server: `127.0.0.1:8080`
 
-% currently, `url` and `port` for proxy and triton gRPC server are hard-coded.
-% embedding dimenstion is also fixed with value `2048`.
+% Currently, `url` and `port` for proxy and triton gRPC server are hard-coded.
+
+% Embedding dimension is a fixed value `2048`.
 
 ### health
 
