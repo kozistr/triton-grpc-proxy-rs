@@ -19,7 +19,7 @@ lazy_static! {
 }
 
 fn serialize_to_byte_string(queries: Vec<String>) -> Vec<u8> {
-    let total_len: usize = queries.iter().map(|query| 4 + query.len()).sum();
+    let total_len: usize = queries.iter().map(|query: &String| 4 + query.len()).sum();
     let mut len_bytes: Vec<u8> = Vec::with_capacity(total_len);
 
     for query in queries {
