@@ -27,10 +27,6 @@ triton-client = { git = "https://github.com/octoml/triton-client-rs.git" }
 
 [build-dependencies]
 
-[[bin]]
-name = "test"
-path = "src/test.rs"
-
 [profile.dev]
 incremental = true
 opt-level = 0
