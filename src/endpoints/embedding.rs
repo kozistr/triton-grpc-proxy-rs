@@ -6,12 +6,12 @@ use ndarray::{Array, Array1, Array2};
 use triton_client::inference::model_infer_request::{InferInputTensor, InferRequestedOutputTensor};
 use triton_client::inference::{ModelInferRequest, ModelInferResponse};
 
-use crate::constants::V1_EMBEDDING_SIZE;
+use crate::constants::{TRITON_SERVER_URL, V1_EMBEDDING_SIZE};
 
 lazy_static! {
     pub static ref CLIENT: AsyncOnce<triton_client::Client> = {
         AsyncOnce::new(async {
-            triton_client::Client::new("http://127.0.0.1:8001", None)
+            triton_client::Client::new(TRITON_SERVER_URL, None)
                 .await
                 .unwrap()
         })
