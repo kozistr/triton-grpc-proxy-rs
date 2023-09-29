@@ -1,29 +1,31 @@
 use std::collections::HashMap;
 
-use ndarray::{Array, Array1};
+use ndarray::{Array, Array1, Array2};
 use triton_client::inference::model_infer_request::{InferInputTensor, InferRequestedOutputTensor};
 use triton_client::inference::ModelInferRequest;
 
-async fn test() {
+fn serialize_byte_string(queries: Vec<Vec<u8>>) -> Vec<u8> {
+    queries
+        .iter()
+        .flat_map(|query: &Vec<u8>| {
+            let len_bytes: Vec<u8> = (query.len() as u32).to_le_bytes().to_vec();
+            len_bytes.into_iter().chain(query.iter().copied())
+        })
+        .collect::<Vec<u8>>()
+}
+
+async fn test() -> Array2<f32> {
     let client: triton_client::Client = triton_client::Client::new("http://127.0.0.1:8001", None)
         .await
         .unwrap();
 
-    // let queries = vec![
-    //     "asdf".to_owned().as_bytes().to_owned(),
-    //     "asdf asdf".to_owned().as_bytes().to_owned(),
-    //     // "asdf asdf".to_owned(),
-    //     // "asdf asdf".to_owned(),
-    // ];
-    // let queries = vec![String::from("asdf").as_bytes().to_owned()];
     let queries: Vec<Vec<u8>> = vec![
-        b"asdf"
-            .to_vec()
-            .iter()
-            .map(|t| t.to_le_bytes().to_vec())
-            .flatten()
-            .collect::<Vec<u8>>(),
+        b"asdf".to_vec(),
+        b"asdf asdf".to_vec(),
+        b"asdf asdf asdf".to_vec(),
+        b"asdf asdf asdf asdf".to_vec(),
     ];
+    let batch_size: usize = queries.len() as usize;
 
     let inputs: Vec<InferInputTensor> = vec![InferInputTensor {
         name: "text".into(),
@@ -32,6 +34,8 @@ async fn test() {
         datatype: "BYTES".into(),
         contents: None,
     }];
+
+    let flatten_queries: Vec<u8> = serialize_byte_string(queries);
 
     let request: ModelInferRequest = ModelInferRequest {
         model_name: "model".into(),
@@ -43,7 +47,7 @@ async fn test() {
             name: "embedding".into(),
             parameters: HashMap::new(),
         }],
-        raw_input_contents: queries,
+        raw_input_contents: vec![flatten_queries],
     };
 
     let response: triton_client::inference::ModelInferResponse =
@@ -58,18 +62,11 @@ async fn test() {
         })
         .collect::<Vec<Array1<f32>>>();
 
-    println!("{:?}", vectors);
+    vectors[0].clone().into_shape((batch_size, 2048)).unwrap()
 }
 
 #[tokio::main]
 async fn main() {
-    let q: Vec<u8> = b"asdf"
-        .to_vec()
-        .iter()
-        .map(|t: &u8| t.to_le_bytes().to_vec())
-        .flatten()
-        .collect::<Vec<u8>>();
-    println!("{:?}", q);
-
-    test().await;
+    let vectors = test().await;
+    println!("{:?}", vectors);
 }
