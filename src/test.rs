@@ -25,7 +25,7 @@ async fn test() -> Array2<f32> {
         b"asdf asdf asdf".to_vec(),
         b"asdf asdf asdf asdf".to_vec(),
     ];
-    let batch_size: usize = queries.len() as usize;
+    let batch_size: usize = queries.len();
 
     let inputs: Vec<InferInputTensor> = vec![InferInputTensor {
         name: "text".into(),
@@ -68,5 +68,11 @@ async fn test() -> Array2<f32> {
 #[tokio::main]
 async fn main() {
     let vectors = test().await;
+
+    let vectors: Vec<Vec<f32>> = vectors
+        .axis_iter(ndarray::Axis(0))
+        .map(|row| row.to_vec())
+        .collect();
+
     println!("{:?}", vectors);
 }
