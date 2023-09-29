@@ -60,6 +60,8 @@ $ curl -H "Content-type:application/json" -X POST http://127.0.0.1:8080/v1/embed
 
 ## Benchmark
 
+* `processing` usually takes sub-milliseconds.
+
 * CPU : i7-7700K (not overclocked)
 * GPU : GTX 1060 6 GB
 * payload : `[{'query': 'asdf asdf asdf asdf'}] * batch_size`
@@ -70,12 +72,12 @@ $ curl -H "Content-type:application/json" -X POST http://127.0.0.1:8080/v1/embed
 
 | batch size |  request  |   model   | processing |
 |    :---:   |   :---:   |   :---:   |    :---:   |
-|      8     |  130.1 ms |  129.4 ms |    0.7 ms  |
-|     16     |  217.3 ms |  216.2 ms |    1.1 ms  |
-|     32     |  352.9 ms |  350.3 ms |    2.6 ms  |
-|     64     |  596.6 ms |  591.6 ms |    5.0 ms  |
-|    128     | 1063.8 ms | 1054.0 ms |    9.8 ms  |
-|    256     | 2182.5 ms | 2164.5 ms |   18.0 ms  |
+|      8     |  123.2 ms |  123.0 ms |    0.2 ms  |
+|     16     |  215.5 ms |  215.3 ms |    0.2 ms  |
+|     32     |  331.8 ms |  331.6 ms |    0.2 ms  |
+|     64     |  580.4 ms |  580.1 ms |    0.3 ms  |
+|    128     | 1050.4 ms | 1050.0 ms |    0.4 ms  |
+|    256     | 2090.2 ms | 2089.1 ms |    1.1 ms  |
 
 ## Maintainer
 
