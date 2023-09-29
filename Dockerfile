@@ -1,13 +1,17 @@
-FROM rust:1.72.1-slim
-
-RUN echo "export RUSTFLAGS=-C target-feature=native" >> /etc/bash.bashrc
-
-COPY . ./workspace
+FROM rust:1.72.1-slim AS builder
 
 WORKDIR /workspace
 
+COPY . /workspace
+
+RUN echo "export RUSTFLAGS=-C target-feature=native" >> /etc/bash.bashrc
+
 RUN make server
 
-EXPOSE 8080
+FROM alpine:latest
 
-CMD ["./target/release/triton_grpc_proxy"]
+WORKDIR /usr/local/bin
+
+COPY --from=builder /workspace/target/release/triton_grpc_proxy .
+
+CMD ["./triton_grpc_proxy"]
