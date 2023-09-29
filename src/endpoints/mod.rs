@@ -23,8 +23,8 @@ pub async fn get_v1_embedding(body: String) -> impl Responder {
     .await;
 
     let responses: Vec<EmbeddingResponse> = embeddings
-        .iter()
-        .map(|embedding| EmbeddingResponse { embedding: embedding.to_vec() })
+        .axis_iter(ndarray::Axis(0))
+        .map(|row| EmbeddingResponse { embedding: row.to_vec() })
         .collect();
 
     let response_string: String = serde_json::to_string(&responses).unwrap();
