@@ -2,6 +2,10 @@
 
 proxy server for triton gRPC inference server in Rust
 
+* it refines the request and response formats of the Triton server.
+* without `tritonclient` dependency.
+* fast & easy to use.
+
 ## Build
 
 ```shell
