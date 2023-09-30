@@ -1,6 +1,6 @@
 # triton-grpc-proxy-rs
 
-proxy server for triton gRPC inference server in Rust
+proxy server for triton gRPC inference server, which inferences embedding model, in Rust.
 
 * it refines the request and response formats of the Triton server.
 * without `tritonclient` dependency.
@@ -61,8 +61,6 @@ $ curl -H "Content-type:application/json" -X POST http://127.0.0.1:8080/v1/embed
 ```
 
 ## Benchmark
-
-* `processing` usually takes sub-milliseconds.
 
 * CPU : i7-7700K (not overclocked)
 * GPU : GTX 1060 6 GB
