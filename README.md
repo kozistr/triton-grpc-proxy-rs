@@ -26,8 +26,7 @@ $ make server
   * triton gRPC server: `127.0.0.1:8001`
   * proxy server: `127.0.0.1:8080`
 
-* Currently, `url` and `port` for proxy and triton gRPC server are hard-coded in [constants.rs](https://github.com/kozistr/triton-grpc-proxy-rs/blob/main/src/constants/mod.rs).
-* Embedding dimension is a fixed value `2048`.
+* Currently, configurations are hard-coded in [constants](https://github.com/kozistr/triton-grpc-proxy-rs/blob/main/src/constants/mod.rs).
 
 ### health
 
