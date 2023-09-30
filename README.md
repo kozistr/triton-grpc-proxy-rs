@@ -1,6 +1,6 @@
 # triton-grpc-proxy-rs
 
-proxy server for triton gRPC inference server, which inferences embedding model, in Rust.
+Proxy server for triton gRPC server that inferences embedding model in Rust.
 
 * it refines the request and response formats of the Triton server.
 * without `tritonclient` dependency.
