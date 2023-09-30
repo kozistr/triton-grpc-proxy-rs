@@ -31,20 +31,18 @@ fn serialize_to_byte_string(queries: Vec<String>) -> Vec<u8> {
 }
 
 async fn inference(queries: Vec<String>) -> ModelInferResponse {
-    let inputs: Vec<InferInputTensor> = vec![InferInputTensor {
-        name: "text".into(),
-        shape: vec![queries.len() as i64, 1],
-        parameters: HashMap::new(),
-        datatype: "BYTES".into(),
-        contents: None,
-    }];
-
     let request: ModelInferRequest = ModelInferRequest {
         model_name: "model".into(),
         model_version: 1.to_string(),
         id: "".into(),
         parameters: HashMap::new(),
-        inputs,
+        inputs: vec![InferInputTensor {
+            name: "text".into(),
+            shape: vec![queries.len() as i64, 1],
+            parameters: HashMap::new(),
+            datatype: "BYTES".into(),
+            contents: None,
+        }],
         outputs: vec![InferRequestedOutputTensor {
             name: "embedding".into(),
             parameters: HashMap::new(),
