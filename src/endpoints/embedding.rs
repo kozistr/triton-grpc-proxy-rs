@@ -6,7 +6,9 @@ use ndarray::{Array, Array1, Array2};
 use triton_client::inference::model_infer_request::{InferInputTensor, InferRequestedOutputTensor};
 use triton_client::inference::{ModelInferRequest, ModelInferResponse};
 
-use crate::constants::{MODEL_NAME, OUTPUT_NAME, TRITON_SERVER_URL, V1_EMBEDDING_SIZE};
+use crate::constants::{
+    INPUT_NAME, MODEL_NAME, MODEL_VERSION, OUTPUT_NAME, TRITON_SERVER_URL, V1_EMBEDDING_SIZE,
+};
 
 lazy_static! {
     pub static ref CLIENT: AsyncOnce<triton_client::Client> = {
@@ -33,11 +35,11 @@ fn serialize_to_byte_string(queries: Vec<String>) -> Vec<u8> {
 async fn inference(queries: Vec<String>) -> ModelInferResponse {
     let request: ModelInferRequest = ModelInferRequest {
         model_name: MODEL_NAME.into(),
-        model_version: 1.to_string(),
+        model_version: MODEL_VERSION.to_owned(),
         id: "".into(),
         parameters: HashMap::new(),
         inputs: vec![InferInputTensor {
-            name: "text".into(),
+            name: INPUT_NAME.into(),
             shape: vec![queries.len() as i64, 1],
             parameters: HashMap::new(),
             datatype: "BYTES".into(),
