@@ -1,15 +1,15 @@
 [package]
 name = "triton-grpc-proxy"
-version = "0.0.1"
+version = "1.0.0"
 edition = "2021"
 license = "Apache-2.0"
 authors = ["kozistr <kozistr@gmail.com>"]
-description = "proxy server for triton gRPC inference server"
+description = "Proxy server for triton gRPC server that inferences embedding model in Rust"
 homepage = "https://github.com/kozistr/triton-grpc-proxy"
 readme = "README.md"
 repository = "https://github.com/kozistr/triton-grpc-proxy"
-categories = ["proxy", "triton"]
-keywords = ["proxy", "triton", "grpc"]
+categories = ["proxy", "triton", "server"]
+keywords = ["proxy", "triton", "grpc", "embedding-server", "restful-api"]
 
 [dependencies]
 anyhow = "^1.0.75"
