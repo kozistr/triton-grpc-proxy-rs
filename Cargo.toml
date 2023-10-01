@@ -1,6 +1,6 @@
 [package]
 name = "triton-grpc-proxy"
-version = "1.0.0"
+version = "0.1.0"
 edition = "2021"
 license = "Apache-2.0"
 authors = ["kozistr <kozistr@gmail.com>"]
@@ -12,7 +12,6 @@ categories = ["proxy", "triton", "server"]
 keywords = ["proxy", "triton", "grpc", "embedding-server", "restful-api"]
 
 [dependencies]
-anyhow = "^1.0.75"
 tonic = "^0.10.1"
 bytemuck = "^1.14.0"
 ndarray = { version = "^0.15.6", features = ["rayon", "serde"] }
