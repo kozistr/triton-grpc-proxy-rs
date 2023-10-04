@@ -30,10 +30,6 @@ mimalloc = { version = "^0.1", default-features = false }
 name = "server"
 path = "src/main.rs"
 
-[[bin]]
-name = "test"
-path = "src/test.rs"
-
 [profile.dev]
 incremental = true
 opt-level = 0
