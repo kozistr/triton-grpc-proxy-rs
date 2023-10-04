@@ -62,9 +62,14 @@ $ curl -H "Content-type:application/json" -X POST http://127.0.0.1:8080/v1/embed
 
 ## Benchmark
 
-* CPU : i7-7700K (not overclocked)
-* GPU : GTX 1060 6 GB
-* payload : `[{'query': 'asdf asdf asdf asdf'}] * batch_size`
+* Environment
+  * CPU : i7-7700K (not overclocked)
+  * GPU : GTX 1060 6 GB
+  * Rust : v1.72.1 stable (2023-09-13)
+  * Triton Server : `23-09-py3`
+    * backend : onnxruntime-gpu
+    * allocator : tcmalloc
+* payload : `[{'query': 'asdf' * 125}] * batch_size`
 * stages
   * request : end to end latency
   * model : only triton gRPC server latency (preprocess + tokenize + model)
@@ -75,12 +80,12 @@ $ curl -H "Content-type:application/json" -X POST http://127.0.0.1:8080/v1/embed
 
 | batch size |  request  |   model   | processing |
 |    :---:   |   :---:   |   :---:   |    :---:   |
-|      8     |   45.2 ms |   43.4 ms |    1.8 ms  |
-|     16     |   77.1 ms |   74.7 ms |    2.4 ms  |
-|     32     |  115.8 ms |  111.6 ms |    4.2 ms  |
-|     64     |  190.1 ms |  183.1 ms |    7.0 ms  |
-|    128     |  361.6 ms |  350.0 ms |   11.6 ms  |
-|    256     |  711.1 ms |  688.5 ms |   22.6 ms  |
+|      8     |   85.2 ms |   83.4 ms |    1.8 ms  |
+|     16     |  112.9 ms |  110.1 ms |    2.8 ms  |
+|     32     |  136.0 ms |  132.1 ms |    3.9 ms  |
+|     64     |  239.4 ms |  233.5 ms |    5.9 ms  |
+|    128     |  399.5 ms |  388.7 ms |   10.8 ms  |
+|    256     |  748.8 ms |  727.7 ms |   21.1 ms  |
 
 ## Maintainer
 
