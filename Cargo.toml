@@ -27,6 +27,10 @@ mimalloc = { version = "^0.1", default-features = false }
 
 [build-dependencies]
 
+[[bin]]
+name = "server"
+path = "src/main.rs"
+
 [profile.dev]
 incremental = true
 opt-level = 0
