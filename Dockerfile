@@ -1,31 +1,29 @@
-FROM rust:1.73.0-slim AS chef
+FROM clux/muslrust:stable as chef
 
-WORKDIR /workspace
+USER root
+WORKDIR /app
 
 RUN echo "export RUSTFLAGS=-C target-feature=native" >> /etc/bash.bashrc
-
-RUN set -eux; \
-    apk add --no-cache musl-dev; \
-    cargo install cargo-chef; \
-    rm -rf $CARGO_HOME/registry
+RUN cargo install cargo-chef
 
 FROM chef AS planner
 
 COPY . .
-RUN cargo chef prepare --recipe_path recipe.json
+RUN cargo chef prepare --recipe-path recipe.json
 
 FROM chef AS builder
 
-COPY --from=planner /workspace/recipe.json .
+COPY --from=planner /app/recipe.json .
 RUN cargo chef cook --release --recipe-path recipe.json
-
 COPY . .
-RUN cargo build --release --bin server
+RUN cargo build --release --target x86_64-unknown-linux-musl --bin server
 
-FROM alpine:latest
+FROM alpine:latest AS runtime
 
 WORKDIR /usr/local/bin
 
-COPY --from=builder /workspace/target/release/triton_grpc_proxy .
+EXPOSE 8001 8080
 
-CMD ["./triton_grpc_proxy"]
+COPY --from=builder /app/target/x86_64-unknown-linux-musl/release/server .
+
+CMD ["./server"]
