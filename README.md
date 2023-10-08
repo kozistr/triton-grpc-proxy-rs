@@ -22,7 +22,7 @@ make server
 
 ## API Specs
 
-* endpoint : `http://127.0.0.1:8080`
+* endpoint : `127.0.0.1:8080`
   * triton gRPC server: `127.0.0.1:8001`
   * proxy server: `127.0.0.1:8080`
 
@@ -53,10 +53,10 @@ ok
 curl -H "Content-type:application/json" -X POST http://127.0.0.1:8080/v1/embedding -d "[{\"query\": \"asdf\"}, {\"query\": \"asdf asdf\"}, {\"query\": \"asdf asdf asdf\"}, {\"query\": \"asdf asdf asdf asdf\"}]"
 ```
 
-* Response Body : `[{'embedding': [[2048 f32 vector], ...]}]`
+* Response Body : `[{'embedding': '2048 f32 vector'}, ...]`
 
 ```shell
-[{"embedding":[-0.30630538,-0.36736542,-0.13295595,0.9422532,-0.34492892,0.08723581,-0.085213244,-0.72103804,...,-0.06771816,0.068485156,-0.09190754,-0.90863633]}]
+[{"embedding":[-0.30630538,-0.36736542,-0.13295595,0.9422532,-0.34492892,0.08723581,-0.085213244,-0.72103804,...,-0.06771816,0.068485156,-0.09190754,-0.90863633]}, ...]
 ```
 
 ## Benchmark
