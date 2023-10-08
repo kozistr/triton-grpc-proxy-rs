@@ -1,24 +1,11 @@
 use std::collections::HashMap;
 
-use async_once::AsyncOnce;
-use lazy_static::lazy_static;
+use ntex::web::types::State;
 use triton_client::inference::model_infer_request::{InferInputTensor, InferRequestedOutputTensor};
 use triton_client::inference::{ModelInferRequest, ModelInferResponse};
 
-use crate::constants::{
-    INPUT_NAME, MODEL_NAME, MODEL_VERSION, OUTPUT_NAME, TRITON_SERVER_URL, V1_EMBEDDING_SIZE,
-};
+use crate::constants::{INPUT_NAME, MODEL_NAME, MODEL_VERSION, OUTPUT_NAME, V1_EMBEDDING_SIZE};
 use crate::models::EmbeddingResponse;
-
-lazy_static! {
-    pub static ref CLIENT: AsyncOnce<triton_client::Client> = {
-        AsyncOnce::new(async {
-            triton_client::Client::new(TRITON_SERVER_URL, None)
-                .await
-                .unwrap()
-        })
-    };
-}
 
 fn serialize_to_byte_string(queries: Vec<String>) -> Vec<u8> {
     let total_len: usize = queries.iter().map(|query: &String| 4 + query.len()).sum();
@@ -32,7 +19,10 @@ fn serialize_to_byte_string(queries: Vec<String>) -> Vec<u8> {
     len_bytes
 }
 
-async fn inference(queries: Vec<String>) -> ModelInferResponse {
+async fn inference(
+    queries: Vec<String>,
+    client: State<triton_client::Client>,
+) -> ModelInferResponse {
     let request: ModelInferRequest = ModelInferRequest {
         model_name: MODEL_NAME.into(),
         model_version: MODEL_VERSION.to_owned(),
@@ -52,18 +42,19 @@ async fn inference(queries: Vec<String>) -> ModelInferResponse {
         raw_input_contents: vec![serialize_to_byte_string(queries)],
     };
 
-    CLIENT
-        .get()
-        .await
+    client
         .model_infer(request)
         .await
         .expect("failed to inference")
 }
 
-pub async fn get_embedding(queries: Vec<String>) -> Vec<EmbeddingResponse> {
+pub async fn get_embedding(
+    queries: Vec<String>,
+    client: State<triton_client::Client>,
+) -> Vec<EmbeddingResponse> {
     let batch_size: usize = queries.len();
 
-    let response: ModelInferResponse = inference(queries).await;
+    let response: ModelInferResponse = inference(queries, client).await;
 
     let mut flatten_vectors: Vec<f32> = Vec::with_capacity(batch_size * V1_EMBEDDING_SIZE);
 
