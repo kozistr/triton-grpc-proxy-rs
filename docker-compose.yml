@@ -1,0 +1,38 @@
+version: "3"
+
+services:
+  triton-server:
+    image: nvcr.io/nvidia/tritonserver:23.09-py3
+    restart: always
+    command: bash -c "LD_PRELOAD=/usr/lib/$(uname -m)-linux-gnu/libtcmalloc.so.4:${LD_PRELOAD} && pip install transformers tokenizers && tritonserver --model-repository=/models"
+    volumes:
+      - C:\Users\zero\Desktop\embedding-server-triton/model_repository:/models
+    ports:
+      - 8000:8000
+      - 8001:8001
+      - 8002:8002
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+        limits:
+          memory: 8g
+    ulimits:
+      memlock: -1
+      stack: 67108864
+  proxy:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    depends_on:
+      - triton-server
+    image: triton-proxy
+    restart: always
+    ports:
+      - 8080:8080
+    environment:
+      TRITON_SERVER_ADDRESS: triton-server
+      TRITON_SERVER_PORT_GRPC: 8001

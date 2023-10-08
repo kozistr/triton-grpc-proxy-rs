@@ -1,4 +1,4 @@
-.PHONY: update format server lint
+.PHONY: update format lint build
 
 update:
 	cargo upgrade
@@ -6,8 +6,20 @@ update:
 format:
 	cargo +nightly fmt
 
-server:
-	cargo run --release --bin server
-
 lint:
 	cargo +nightly clippy
+
+build:
+	cargo run --release --bin server
+
+build-docker:
+	docker build . -t triton-proxy
+
+run-docker:
+	docker run --rm --shm-size=2g -it -p8080:8080 triton-proxy
+
+run-docker-compose:
+	docker-compose up -d
+
+run-example:
+	./run_client.sh
