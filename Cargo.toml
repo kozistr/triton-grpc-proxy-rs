@@ -12,15 +12,16 @@ categories = ["proxy", "triton", "server"]
 keywords = ["proxy", "triton", "grpc", "embedding-server", "restful-api"]
 
 [dependencies]
-tonic = "^0.10.1"
-bytemuck = "^1.14.0"
-tokio = { version = "^1.32.0", features = ["macros", "rt-multi-thread"] }
-actix-web = "^4.4.0"
+tonic = "^0.10"
+bytemuck = "^1.14"
+tokio = { version = "^1.32", features = ["macros", "rt-multi-thread"] }
+ntex = { version = "^0.7", features = ["tokio"] }
 serde = { version = "^1.0", features = ["derive"] }
 serde_json = "^1.0"
-env_logger = "^0.10.0"
-lazy_static = "^1.4.0"
-async_once = "^0.2.6"
+futures = "^0.3"
+env_logger = "^0.10"
+lazy_static = "^1.4"
+async_once = "^0.2"
 triton-client = { git = "https://github.com/octoml/triton-client-rs.git" }
 mimalloc = { version = "^0.1", default-features = false }
 
