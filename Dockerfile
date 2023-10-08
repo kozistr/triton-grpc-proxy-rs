@@ -1,4 +1,4 @@
-FROM rust:1.72.1-slim AS chef
+FROM rust:1.73.0-slim AS chef
 
 WORKDIR /workspace
 
