@@ -30,7 +30,7 @@ async fn main() -> std::io::Result<()> {
             .service(health_check)
             .service(get_v1_embedding)
     })
-    .bind(("127.0.0.1", SERVER_PORT))?
+    .bind(("0.0.0.0", SERVER_PORT))?
     .run()
     .await
 }
