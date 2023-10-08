@@ -14,7 +14,12 @@ build:
 
 build-docker:
 	docker build . -t triton-proxy
-	docker run --rm --network=host --shm-size=2g -it -p8080:8080 triton-proxy
+
+run-docker:
+	docker run --rm --shm-size=2g -it -p8080:8080 triton-proxy
+
+run-docker-compose:
+	docker-compose up -d
 
 run-example:
 	./run_client.sh
