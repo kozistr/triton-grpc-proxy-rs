@@ -1,19 +1,18 @@
 pub mod embedding;
 
+use ntex::web::types::Json;
 use ntex::web::{post, Error, HttpResponse};
-use serde_json::from_str;
 
 use crate::endpoints::embedding::get_embedding;
 use crate::models::{EmbeddingResponse, QueryRequest};
 
 #[post("/v1/embedding")]
-pub async fn get_v1_embedding(body: String) -> Result<HttpResponse, Error> {
-    let requests: Result<Vec<QueryRequest>, _> = from_str(&body);
-
-    let queries: Vec<String> = match requests {
-        Ok(req) => req.into_iter().map(|r: QueryRequest| r.query).collect(),
-        Err(_) => return Ok(HttpResponse::BadRequest().finish()),
-    };
+pub async fn get_v1_embedding(requests: Json<Vec<QueryRequest>>) -> Result<HttpResponse, Error> {
+    let queries: Vec<String> = requests
+        .into_inner()
+        .into_iter()
+        .map(|req: QueryRequest| req.query)
+        .collect();
 
     let responses: Vec<EmbeddingResponse> = get_embedding(queries).await;
 
