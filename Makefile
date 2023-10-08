@@ -13,8 +13,8 @@ build:
 	cargo run --release --bin server
 
 build-docker:
-	docker build .
-	docker run -it -p8080:8080 -p8001:8001
+	docker build . -t triton-proxy
+	docker run --rm --network=host --shm-size=2g -it -p8080:8080 triton-proxy
 
 run-example:
 	./run_client.sh
