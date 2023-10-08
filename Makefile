@@ -1,4 +1,4 @@
-.PHONY: update format server lint
+.PHONY: update format lint build
 
 update:
 	cargo upgrade
@@ -6,8 +6,15 @@ update:
 format:
 	cargo +nightly fmt
 
-server:
-	cargo run --release --bin server
-
 lint:
 	cargo +nightly clippy
+
+build:
+	cargo run --release --bin server
+
+build-docker:
+	docker build .
+	docker run -it -p8080:8080 -p8001:8001
+
+run-example:
+	./run_client.sh
