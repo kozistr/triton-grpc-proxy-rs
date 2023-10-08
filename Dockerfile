@@ -20,7 +20,7 @@ COPY --from=planner /workspace/recipe.json .
 RUN cargo chef cook --release --recipe-path recipe.json
 
 COPY . .
-RUN cargo build --release
+RUN cargo build --release --bin server
 
 FROM alpine:latest
 
