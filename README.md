@@ -8,9 +8,17 @@ Proxy server for triton gRPC server that inferences embedding model in Rust.
 
 ## Build
 
+### build & run a binary
+
 ```shell
 export RUSTFLAGS="-C target-feature=native"
 make server
+```
+
+### build & run both triton-server & proxy-server with docker-compose
+
+```shell
+docker-compose up -d
 ```
 
 ## Architecture
