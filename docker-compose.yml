@@ -24,10 +24,11 @@ services:
       memlock: -1
       stack: 67108864
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://triton-server:8002"]
+      test: ["CMD", "curl", "http://triton-server:8000/v2/health/ready"]
       interval: 3s
       timeout: 5s
       retries: 5
+      start_period: 20s
   proxy-server:
     build:
       context: ./
