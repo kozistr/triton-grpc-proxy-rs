@@ -23,6 +23,6 @@ pub struct Config {
     #[envconfig(from = "OUTPUT_NAME", default = "embedding")]
     pub output_name: String,
 
-    #[envconfig(from = "EMBEDDING_SIZE", default = "2048")]
+    #[envconfig(from = "EMBEDDING_SIZE", default = "1024")]
     pub embedding_size: usize,
 }
