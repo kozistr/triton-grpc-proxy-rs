@@ -15,10 +15,16 @@ export RUSTFLAGS="-C target-feature=native"
 make server
 ```
 
+### Build docker
+
+```shell
+make build-docker
+```
+
 ### build & run both triton-server & proxy-server with docker-compose
 
 ```shell
-docker-compose up -d
+make run-docker-compose
 ```
 
 ## Architecture
