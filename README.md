@@ -126,6 +126,17 @@ curl -H "Content-type:application/json" -X POST http://127.0.0.1:8080/v1/embeddi
 |    128     |  139.2 ms |  129.9 ms |    9.3 ms  |
 |    256     |  307.4 ms |  287.1 ms |   20.3 ms  |
 
+## To-Do
+
+* [x] add `Dockerfile` and `docker-compose` to easily deploy the servers
+* [x] triton inference server
+  * [x] add model converter script.
+  * [x] configurations
+* [x] move hard-coded configs to `env`
+* [x] optimize the proxy server performance
+* [x] README
+* [ ] move `tokenizer` part from triton server into `proxy-server`
+
 ## Maintainer
 
 [@kozistr](http://kozistr.tech)
