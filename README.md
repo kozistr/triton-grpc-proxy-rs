@@ -93,10 +93,10 @@ ok
 curl -H "Content-type:application/json" -X POST http://127.0.0.1:8080/v1/embedding -d "[{\"query\": \"asdf\"}, {\"query\": \"asdf asdf\"}, {\"query\": \"asdf asdf asdf\"}, {\"query\": \"asdf asdf asdf asdf\"}]"
 ```
 
-* Response Body : `[{'embedding': '2048 f32 vector'}, ...]`
+* Response Body : `[{'embedding': '1024 f32 vector'}, ...]`
 
 ```shell
-[{"embedding":[-0.30630538,-0.36736542,-0.13295595,0.9422532,-0.34492892,0.08723581,-0.085213244,-0.72103804,...,-0.06771816,0.068485156,-0.09190754,-0.90863633]}, ...]
+[{"embedding": [-0.8067292,-0.004603,-0.24123234,0.59398544,-0.5583446,...]}, ...]
 ```
 
 ## Benchmark
