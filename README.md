@@ -8,23 +8,35 @@ Proxy server for triton gRPC server that inferences embedding model in Rust.
 
 ## Build
 
-### build & run a binary
+### 1. Convert embedding model to onnx
+
+* [`BAAI/bge-large-en-v1.5`](https://huggingface.co/BAAI/bge-large-en-v1.5) is used for an example.
+* I'll convert Pytorch into onnx model, and saved to `./model_repository/embedding/1/v1.onnx`.
+
+```shell
+python3 convert.py
+```
+
+### 2. Run docker-compose
+
+* I'll run both triton inference server and proxy server.
+* You need to edit absolute path of the volumn (where pointed to the `./model_repository`) in `docker-compose.yml`.
+
+```shell
+make run-docker-compose
+```
+
+### build a proxy server only
+
+* You can also build and run a triton proxy server with below command.
 
 ```shell
 export RUSTFLAGS="-C target-feature=native"
 make server
 ```
 
-### Build docker
-
 ```shell
 make build-docker
-```
-
-### build & run both triton-server & proxy-server with docker-compose
-
-```shell
-make run-docker-compose
 ```
 
 ## Architecture
