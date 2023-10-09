@@ -30,11 +30,18 @@ docker-compose up -d
 
 ## API Specs
 
-* endpoint : `127.0.0.1:8080`
-  * triton gRPC server: `127.0.0.1:8001`
-  * proxy server: `127.0.0.1:8080`
+### Configs
 
-* Currently, configurations are hard-coded in [constants](https://github.com/kozistr/triton-grpc-proxy-rs/blob/main/src/constants/mod.rs).
+* parse configuration from the env variables.
+
+* `SERVER_PORT`: proxy server port. default `8080`.
+* `TRITON_SERVER_URL`: triton inference gRPC server url. default `http://triton-server`.
+* `TRITON_SERVER_GRPC_PORT`: triton inference gRPC server port. default `8001`.
+* `MODEL_VERSION`: model version. default `1`.
+* `MODEL_NAME`: model name. default `model`.
+* `INPUT_NAME`: input name. default `text`.
+* `OUTPUT_NAME`: output name. default `embedding`.
+* `EMBEDDING_SIZE`: size of the embedding. default `2048`.
 
 ### health
 
