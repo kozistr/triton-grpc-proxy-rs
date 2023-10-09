@@ -15,8 +15,7 @@ class TritonPythonModel:
         responses = []
         for request in requests:
             query: List[str] = [
-                t.decode('utf-8')
-                for t in pb_utils.get_input_tensor_by_name(request, 'text').as_numpy()[:, 0].tolist()
+                t.decode('utf-8') for t in pb_utils.get_input_tensor_by_name(request, 'text').as_numpy()[:, 0].tolist()
             ]
 
             tokens: Dict[str, np.ndarray] = self.tokenizer(

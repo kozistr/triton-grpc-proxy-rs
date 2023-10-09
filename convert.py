@@ -1,9 +1,9 @@
 import os
 
 import torch
+from onnxruntime.transformers import optimizer
 from torch import nn
 from transformers import AutoModel
-from onnxruntime.transformers import optimizer
 
 
 class EmbeddingModel(nn.Module):
@@ -48,7 +48,7 @@ def main():
 
     optimized_model = optimizer.optimize_model(
         './model_repository/embedding/1/v1.onnx',
-        model_type='bert', 
+        model_type='bert',
         num_heads=16,
         hidden_size=1024,
         opt_level=99,
