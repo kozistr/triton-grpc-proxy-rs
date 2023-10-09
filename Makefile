@@ -7,7 +7,7 @@ format:
 	cargo +nightly fmt
 
 lint:
-	cargo +nightly clippy
+	cargo +nightly clippy --all-features --all-targets -- -D warnings
 
 build:
 	cargo run --release --bin server
