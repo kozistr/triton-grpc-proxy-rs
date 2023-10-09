@@ -30,3 +30,4 @@ Cargo.lock
 *.data
 *.graph
 *.index
+*.onnx
