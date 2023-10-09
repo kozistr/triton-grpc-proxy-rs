@@ -4,7 +4,7 @@ use ntex::web::types::State;
 use triton_client::inference::model_infer_request::{InferInputTensor, InferRequestedOutputTensor};
 use triton_client::inference::{ModelInferRequest, ModelInferResponse};
 
-use crate::constants::{INPUT_NAME, MODEL_NAME, MODEL_VERSION, OUTPUT_NAME, V1_EMBEDDING_SIZE};
+use crate::configs::Config;
 use crate::models::EmbeddingResponse;
 
 fn serialize_to_byte_string(queries: Vec<String>) -> Vec<u8> {
@@ -22,21 +22,22 @@ fn serialize_to_byte_string(queries: Vec<String>) -> Vec<u8> {
 async fn inference(
     queries: Vec<String>,
     client: State<triton_client::Client>,
+    config: State<Config>,
 ) -> ModelInferResponse {
     let request: ModelInferRequest = ModelInferRequest {
-        model_name: MODEL_NAME.into(),
-        model_version: MODEL_VERSION.to_owned(),
+        model_name: config.model_name.clone(),
+        model_version: config.model_version.clone(),
         id: "".into(),
         parameters: HashMap::new(),
         inputs: vec![InferInputTensor {
-            name: INPUT_NAME.into(),
+            name: config.input_name.clone(),
             shape: vec![queries.len() as i64, 1],
             parameters: HashMap::new(),
             datatype: "BYTES".into(),
             contents: None,
         }],
         outputs: vec![InferRequestedOutputTensor {
-            name: OUTPUT_NAME.into(),
+            name: config.output_name.clone(),
             parameters: HashMap::new(),
         }],
         raw_input_contents: vec![serialize_to_byte_string(queries)],
@@ -51,12 +52,14 @@ async fn inference(
 pub async fn get_embedding(
     queries: Vec<String>,
     client: State<triton_client::Client>,
+    config: State<Config>,
 ) -> Vec<EmbeddingResponse> {
     let batch_size: usize = queries.len();
+    let embedding_size: usize = config.embedding_size;
 
-    let response: ModelInferResponse = inference(queries, client).await;
+    let response: ModelInferResponse = inference(queries, client, config).await;
 
-    let mut flatten_vectors: Vec<f32> = Vec::with_capacity(batch_size * V1_EMBEDDING_SIZE);
+    let mut flatten_vectors: Vec<f32> = Vec::with_capacity(batch_size * embedding_size);
 
     for r in response.raw_output_contents.into_iter() {
         let e: &[f32] = bytemuck::cast_slice::<u8, f32>(r.as_slice());
@@ -64,7 +67,7 @@ pub async fn get_embedding(
     }
 
     flatten_vectors
-        .chunks_exact(V1_EMBEDDING_SIZE)
+        .chunks_exact(embedding_size)
         .map(|row: &[f32]| EmbeddingResponse { embedding: row.to_vec() })
         .collect()
 }
