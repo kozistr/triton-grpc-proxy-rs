@@ -48,4 +48,4 @@ services:
       MODEL_NAME: "model"
       INPUT_NAME: "text"
       OUTPUT_NAME: "embedding"
-      EMBEDDING_SIZE: 2048
+      EMBEDDING_SIZE: 1024
