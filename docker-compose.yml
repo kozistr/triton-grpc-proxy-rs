@@ -23,16 +23,28 @@ services:
     ulimits:
       memlock: -1
       stack: 67108864
-  proxy:
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://triton-server:8002"]
+      interval: 3s
+      timeout: 5s
+      retries: 5
+  proxy-server:
     build:
       context: ./
       dockerfile: Dockerfile
     depends_on:
-      - triton-server
+      triton-server:
+        condition: service_healthy
     image: triton-proxy
     restart: always
     ports:
       - 8080:8080
     environment:
-      TRITON_SERVER_ADDRESS: triton-server
+      TRITON_SERVER_ADDRESS: "http://triton-server"
       TRITON_SERVER_PORT_GRPC: 8001
+      SERVER_PORT: 8080
+      MODEL_VERSION: "1"
+      MODEL_NAME: "model"
+      INPUT_NAME: "text"
+      OUTPUT_NAME: "embedding"
+      EMBEDDING_SIZE: 2048
