@@ -2,6 +2,7 @@
 static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
 use envconfig::Envconfig;
+use ntex::web::middleware::Logger;
 use ntex::web::{get, App, HttpResponse, HttpServer, Responder};
 
 use crate::configs::Config;
@@ -34,6 +35,7 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         App::new()
+            .wrap(Logger::default())
             .state(client.clone())
             .state(config.clone())
             .service(health_check)
