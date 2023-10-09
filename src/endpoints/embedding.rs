@@ -19,11 +19,14 @@ fn serialize_to_byte_string(queries: Vec<String>) -> Vec<u8> {
     len_bytes
 }
 
-async fn inference(
+pub async fn get_embedding(
     queries: Vec<String>,
     client: State<triton_client::Client>,
     config: State<Config>,
-) -> ModelInferResponse {
+) -> Vec<EmbeddingResponse> {
+    let batch_size: usize = queries.len();
+    let embedding_size: usize = config.embedding_size;
+
     let request: ModelInferRequest = ModelInferRequest {
         model_name: config.model_name.clone(),
         model_version: config.model_version.clone(),
@@ -43,21 +46,10 @@ async fn inference(
         raw_input_contents: vec![serialize_to_byte_string(queries)],
     };
 
-    client
+    let response: ModelInferResponse = client
         .model_infer(request)
         .await
-        .expect("failed to inference")
-}
-
-pub async fn get_embedding(
-    queries: Vec<String>,
-    client: State<triton_client::Client>,
-    config: State<Config>,
-) -> Vec<EmbeddingResponse> {
-    let batch_size: usize = queries.len();
-    let embedding_size: usize = config.embedding_size;
-
-    let response: ModelInferResponse = inference(queries, client, config).await;
+        .expect("failed to inference");
 
     let mut flatten_vectors: Vec<f32> = Vec::with_capacity(batch_size * embedding_size);
 
