@@ -1,0 +1,43 @@
+name: "embedding"
+platform: "onnxruntime_onnx"
+backend: "onnxruntime"
+default_model_filename: "v1.onnx"
+max_batch_size: 256
+
+dynamic_batching {
+    preferred_batch_size: [ 1, 2, 4, 8, 16, 32, 64, 128, 256 ]
+    max_queue_delay_microseconds: 100
+}
+
+input [
+    {
+        name: "input_ids"
+        data_type: TYPE_INT64
+        dims: [ -1 ]
+    },
+    {
+        name: "attention_mask"
+        data_type: TYPE_INT64
+        dims: [ -1 ]
+    },
+    {
+        name: "token_type_ids"
+        data_type: TYPE_INT64
+        dims: [ -1 ]
+    }
+]
+
+output [
+    {
+        name: "embedding"
+        data_type: TYPE_FP32
+        dims: [ 1024 ]
+    }
+]
+
+instance_group [
+    {
+      count: 1
+      kind: KIND_GPU
+    }
+]

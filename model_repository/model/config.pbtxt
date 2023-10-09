@@ -1,0 +1,66 @@
+name: "model"
+max_batch_size: 256
+platform: "ensemble"
+
+input [
+    {
+        name: "text"
+        data_type: TYPE_STRING
+        dims: [ 1 ]
+    }
+]
+
+output {
+    name: "embedding"
+    data_type: TYPE_FP32
+    dims: [ 1024 ]
+}
+
+ensemble_scheduling {
+    step [
+        {
+            model_name: "tokenizer"
+            model_version: -1
+            input_map {
+                key: "text"
+                value: "text"
+            }
+            output_map [
+                {
+                    key: "input_ids"
+                    value: "input_ids"
+                },
+                {
+                    key: "attention_mask"
+                    value: "attention_mask"
+                },
+                {
+                    key: "token_type_ids"
+                    value: "token_type_ids"
+                }
+            ]
+        },
+        {
+            model_name: "embedding"
+            model_version: -1
+            input_map [
+                {
+                    key: "input_ids"
+                    value: "input_ids"
+                },
+                {
+                    key: "attention_mask"
+                    value: "attention_mask"
+                },
+                {
+                    key: "token_type_ids"
+                    value: "token_type_ids"
+                }
+            ]
+            output_map {
+                key: "embedding"
+                value: "embedding"
+            }
+        }
+    ]
+}
