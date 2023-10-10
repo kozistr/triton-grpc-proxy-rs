@@ -8,11 +8,11 @@ Proxy server for triton gRPC server that inferences embedding model in Rust.
 
 ## Build
 
-### 1. Convert embedding model to onnx
+### 1. Convert the embedding model to onnx
 
 * [`BAAI/bge-large-en-v1.5`](https://huggingface.co/BAAI/bge-large-en-v1.5) is used for an example.
-* I'll convert Pytorch into onnx model, and saved to `./model_repository/embedding/1/v1.onnx`.
-* Currently, `max_batch_size` is limited to `256` due to OOM. You can change this value to fit your env.
+* It'll convert Pytorch into onnx model, and save it to `./model_repository/embedding/1/v1.onnx`.
+* Currently, `max_batch_size` is limited to `256` due to OOM. You can change this value to fit your environment.
 
 ```shell
 python3 convert.py
@@ -20,16 +20,16 @@ python3 convert.py
 
 ### 2. Run docker-compose
 
-* I'll run both triton inference server and proxy server.
-* You need to edit absolute path of the volumn (where pointed to the `./model_repository`) in `docker-compose.yml`.
+* I'll run both Triton inference server and the proxy server.
+* You need to edit the absolute path of the volume (where pointed to the `./model_repository`) in `docker-compose.yml`.
 
 ```shell
 make run-docker-compose
 ```
 
-### build & run a proxy server only
+### Build & run a proxy server only
 
-* You can also build and run a triton proxy server with below command.
+* You can also build and run a triton proxy server with the below command.
 
 ```shell
 export RUSTFLAGS="-C target-feature=native"
@@ -40,7 +40,7 @@ make server
 make build-docker
 ```
 
-### build & run triton inference server only
+### Build & run triton inference server only
 
 ```shell
 docker run --gpus all --rm --ipc=host --shm-size=8g --ulimit memlock=-1 --ulimit stack=67108864 -p8000:8000 -p8001:8001 -p8002:8002 -v$(pwd)triton-proxy-server-rs/model_repository:/models nvcr.io/nvidia/tritonserver:23.09-py3 bash -c "LD_PRELOAD=/usr/lib/$(uname -m)-linux-gnu/libtcmalloc.so.4:${LD_PRELOAD} && pip install transformers tokenizers && tritonserver --model-repository=/models"
@@ -110,7 +110,7 @@ curl -H "Content-type:application/json" -X POST http://127.0.0.1:8080/v1/embeddi
     * allocator : tcmalloc
 * payload : `[{'query': 'asdf' * 125}] * batch_size`
 * stages
-  * request : end to end latency (client-side)
+  * request : end-to-end latency (client-side)
   * model : only triton gRPC server latency (preprocess + tokenize + model)
   * processing : request - model latency
     * json de/serialization
