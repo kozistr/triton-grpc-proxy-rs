@@ -43,7 +43,7 @@ make build-docker
 ### Build & run triton inference server only
 
 ```shell
-docker run --gpus all --rm --ipc=host --shm-size=8g --ulimit memlock=-1 --ulimit stack=67108864 -p8000:8000 -p8001:8001 -p8002:8002 -v$(pwd)triton-proxy-server-rs/model_repository:/models nvcr.io/nvidia/tritonserver:23.09-py3 bash -c "LD_PRELOAD=/usr/lib/$(uname -m)-linux-gnu/libtcmalloc.so.4:${LD_PRELOAD} && pip install transformers tokenizers && tritonserver --model-repository=/models"
+docker run --gpus all --rm --ipc=host --shm-size=8g --ulimit memlock=-1 --ulimit stack=67108864 -p8000:8000 -p8001:8001 -p8002:8002 -v$(pwd)triton-grpc-proxy-rs/model_repository:/models nvcr.io/nvidia/tritonserver:23.09-py3 bash -c "LD_PRELOAD=/usr/lib/$(uname -m)-linux-gnu/libtcmalloc.so.4:${LD_PRELOAD} && pip install transformers tokenizers && tritonserver --model-repository=/models"
 ```
 
 ## Architecture
