@@ -3,6 +3,7 @@ import os
 import torch
 from onnxruntime.transformers import optimizer
 from torch import nn
+from torch.nn.functional import normalize
 from transformers import AutoModel
 
 
@@ -18,7 +19,11 @@ class EmbeddingModel(nn.Module):
         attention_mask: torch.Tensor,
         token_type_ids: torch.Tensor,
     ) -> torch.Tensor:
-        return self.backbone(input_ids, attention_mask, token_type_ids, return_dict=True).last_hidden_state[:, 0]
+        return normalize(
+            self.backbone(input_ids, attention_mask, token_type_ids, return_dict=True).last_hidden_state[:, 0], 
+            p=2.0, 
+            dim=1,
+        )
 
 
 def main():
