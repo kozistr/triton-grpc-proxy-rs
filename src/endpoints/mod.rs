@@ -13,11 +13,8 @@ pub async fn get_v1_embedding(
     client: State<triton_client::Client>,
     config: State<Config>,
 ) -> Result<HttpResponse, Error> {
-    let queries: Vec<String> = requests
-        .into_inner()
-        .into_iter()
-        .map(|req: QueryRequest| req.query)
-        .collect();
+    let queries: Vec<String> =
+        requests.into_inner().into_iter().map(|req: QueryRequest| req.query).collect();
 
     let responses: Vec<EmbeddingResponse> = get_embedding(queries, client, config).await;
 

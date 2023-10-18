@@ -46,10 +46,8 @@ pub async fn get_embedding(
         raw_input_contents: vec![serialize_to_byte_string(queries)],
     };
 
-    let response: ModelInferResponse = client
-        .model_infer(request)
-        .await
-        .expect("failed to inference");
+    let response: ModelInferResponse =
+        client.model_infer(request).await.expect("failed to inference");
 
     let mut flatten_vectors: Vec<f32> = Vec::with_capacity(batch_size * embedding_size);
 
