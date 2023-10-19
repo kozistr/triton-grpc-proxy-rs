@@ -7,6 +7,7 @@ format:
 	cargo +nightly fmt
 
 lint:
+	cargo +nightly fmt -- --check
 	cargo +nightly clippy --all-features --all-targets -- -D warnings
 
 build:
