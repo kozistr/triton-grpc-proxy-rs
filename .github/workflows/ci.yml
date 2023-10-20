@@ -21,18 +21,6 @@ jobs:
           override: true
 
       - name: Cache cargo
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/            
-          key: ${{ runner.os }}-cargo-stable
-          restore-keys: ${{ runner.os }}-cargo-stable
-
-      - name: Cache cargo
         uses: Swatinem/rust-cache@v2
         with:
           prefix-key: stable
