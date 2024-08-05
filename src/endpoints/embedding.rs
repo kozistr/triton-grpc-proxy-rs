@@ -9,14 +9,14 @@ use crate::models::EmbeddingResponse;
 
 fn serialize_to_byte_string(queries: &[&str]) -> Vec<u8> {
     let total_len: usize = queries.iter().map(|query: &&str| 4 + query.len()).sum();
-    let mut len_bytes: Vec<u8> = Vec::with_capacity(total_len);
+    let mut payload: Vec<u8> = Vec::with_capacity(total_len);
 
     for query in queries {
-        len_bytes.extend_from_slice(&(query.len() as u32).to_le_bytes());
-        len_bytes.extend_from_slice(query.as_bytes());
+        payload.extend_from_slice(&(query.len() as u32).to_le_bytes());
+        payload.extend_from_slice(query.as_bytes());
     }
 
-    len_bytes
+    payload
 }
 
 pub async fn get_embeddings_from_triton_server(
