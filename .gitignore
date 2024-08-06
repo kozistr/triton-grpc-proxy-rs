@@ -31,3 +31,4 @@ Cargo.lock
 *.graph
 *.index
 *.onnx
+*.onnx_data
