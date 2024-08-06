@@ -8,10 +8,10 @@ from transformers import AutoModel
 
 
 class EmbeddingModel(nn.Module):
-    def __init__(self):
+    def __init__(self, model_name: str = 'BAAI/bge-m3'):
         super().__init__()
 
-        self.backbone = AutoModel.from_pretrained('BAAI/bge-large-en-v1.5')
+        self.backbone = AutoModel.from_pretrained(model_name)
 
     def forward(
         self,
