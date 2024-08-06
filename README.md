@@ -10,13 +10,15 @@ Proxy server for triton gRPC server that inferences embedding model in Rust.
 
 ### 1. Convert the embedding model to onnx
 
-* [`BAAI/bge-large-en-v1.5`](https://huggingface.co/BAAI/bge-large-en-v1.5) is used for an example.
-* It'll convert Pytorch into onnx model, and save it to `./model_repository/embedding/1/v1.onnx`.
-* Currently, `max_batch_size` is limited to `256` due to OOM. You can change this value to fit your environment.
+* [`BAAI/bge-m3`](https://huggingface.co/BAAI/bge-m3) is used for an example.
+  * It'll convert Pytorch into onnx model, and save it to `./model_repository/embedding/1/v1.onnx`.
+  * Currently, `max_batch_size` is limited to `256` due to OOM. You can change this value to fit your environment.
 
 ```shell
 python3 convert.py
 ```
+
+Or you can download from the repository [here](https://huggingface.co/BAAI/bge-m3/tree/main/onnx).
 
 ### 2. Run docker-compose
 
@@ -43,7 +45,7 @@ make build-docker
 ### Build & run triton inference server only
 
 ```shell
-docker run --gpus all --rm --ipc=host --shm-size=8g --ulimit memlock=-1 --ulimit stack=67108864 -p8000:8000 -p8001:8001 -p8002:8002 -v$(pwd)triton-grpc-proxy-rs/model_repository:/models nvcr.io/nvidia/tritonserver:23.09-py3 bash -c "LD_PRELOAD=/usr/lib/$(uname -m)-linux-gnu/libtcmalloc.so.4:${LD_PRELOAD} && pip install transformers tokenizers && tritonserver --model-repository=/models"
+docker run --gpus all --rm --ipc=host --shm-size=8g --ulimit memlock=-1 --ulimit stack=67108864 -p8000:8000 -p8001:8001 -p8002:8002 -v$(pwd)triton-grpc-proxy-rs/model_repository:/models nvcr.io/nvidia/tritonserver:24.07-py3 bash -c "LD_PRELOAD=/usr/lib/$(uname -m)-linux-gnu/libtcmalloc.so.4:${LD_PRELOAD} && pip install transformers tokenizers && tritonserver --model-repository=/models"
 ```
 
 ## Architecture
@@ -66,7 +68,7 @@ docker run --gpus all --rm --ipc=host --shm-size=8g --ulimit memlock=-1 --ulimit
 * `MODEL_NAME`: model name. default `model`.
 * `INPUT_NAME`: input name. default `text`.
 * `OUTPUT_NAME`: output name. default `embedding`.
-* `EMBEDDING_SIZE`: size of the embedding. default `2048`.
+* `EMBEDDING_SIZE`: size of the embedding. default `1024`.
 
 ### health
 
@@ -105,7 +107,7 @@ curl -H "Content-type:application/json" -X POST http://127.0.0.1:8080/v1/embeddi
   * CPU : i7-7700K (not overclocked)
   * GPU : GTX 1060 6 GB
   * Rust : v1.73.0 stable
-  * Triton Server : `23-09-py3`
+  * Triton Server : `24-07-py3`
     * backend : onnxruntime-gpu
     * allocator : tcmalloc
 * payload : `[{'query': 'asdf' * 125}] * batch_size`
