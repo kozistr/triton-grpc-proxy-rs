@@ -7,8 +7,8 @@ use triton_client::inference::{ModelInferRequest, ModelInferResponse};
 use crate::configs::Config;
 use crate::models::EmbeddingResponse;
 
-fn serialize_to_byte_string(queries: Vec<String>) -> Vec<u8> {
-    let total_len: usize = queries.iter().map(|query: &String| 4 + query.len()).sum();
+fn serialize_to_byte_string(queries: &[&str]) -> Vec<u8> {
+    let total_len: usize = queries.iter().map(|query: &&str| 4 + query.len()).sum();
     let mut len_bytes: Vec<u8> = Vec::with_capacity(total_len);
 
     for query in queries {
@@ -19,10 +19,10 @@ fn serialize_to_byte_string(queries: Vec<String>) -> Vec<u8> {
     len_bytes
 }
 
-pub async fn get_embedding(
-    queries: Vec<String>,
-    client: State<triton_client::Client>,
-    config: State<Config>,
+pub async fn get_embeddings(
+    queries: &[&str],
+    client: &State<triton_client::Client>,
+    config: &State<Config>,
 ) -> Vec<EmbeddingResponse> {
     let batch_size: usize = queries.len();
     let embedding_size: usize = config.embedding_size;
@@ -30,13 +30,13 @@ pub async fn get_embedding(
     let request: ModelInferRequest = ModelInferRequest {
         model_name: config.model_name.clone(),
         model_version: config.model_version.clone(),
-        id: "".into(),
+        id: String::new(),
         parameters: HashMap::new(),
         inputs: vec![InferInputTensor {
             name: config.input_name.clone(),
-            shape: vec![queries.len() as i64, 1],
+            shape: vec![batch_size as i64, 1],
             parameters: HashMap::new(),
-            datatype: "BYTES".into(),
+            datatype: "BYTES".to_string(),
             contents: None,
         }],
         outputs: vec![InferRequestedOutputTensor {
@@ -51,8 +51,8 @@ pub async fn get_embedding(
 
     let mut flatten_vectors: Vec<f32> = Vec::with_capacity(batch_size * embedding_size);
 
-    for r in response.raw_output_contents.into_iter() {
-        let e: &[f32] = bytemuck::cast_slice::<u8, f32>(r.as_slice());
+    for r in &response.raw_output_contents {
+        let e: &[f32] = bytemuck::cast_slice::<u8, f32>(r);
         flatten_vectors.extend_from_slice(e);
     }
 
