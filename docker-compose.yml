@@ -2,7 +2,7 @@ version: "3"
 
 services:
   triton-server:
-    image: nvcr.io/nvidia/tritonserver:23.09-py3
+    image: nvcr.io/nvidia/tritonserver:24.07-py3
     restart: always
     command: bash -c "LD_PRELOAD=/usr/lib/$(uname -m)-linux-gnu/libtcmalloc.so.4:${LD_PRELOAD} && pip install transformers tokenizers && tritonserver --model-repository=/models"
     volumes:
