@@ -9,7 +9,7 @@ class TritonPythonModel:
     tokenizer: Optional[PreTrainedTokenizer]
 
     def initialize(self, args: Dict[str, str]) -> None:
-        self.tokenizer = AutoTokenizer.from_pretrained('BAAI/bge-large-en-v1.5')
+        self.tokenizer = AutoTokenizer.from_pretrained('BAAI/bge-m3')
 
     def execute(self, requests) -> "List[List[pb_utils.Tensor]]":
         responses = []
