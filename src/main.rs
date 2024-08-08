@@ -6,7 +6,7 @@ use ntex::web::middleware::Logger;
 use ntex::web::{get, App, HttpResponse, HttpServer, Responder};
 
 use crate::configs::Config;
-use crate::endpoints::get_v1_embedding;
+use crate::endpoints::get_embeddings;
 
 mod configs;
 mod endpoints;
@@ -39,7 +39,7 @@ async fn main() -> std::io::Result<()> {
             .state(client.clone())
             .state(config.clone())
             .service(health_check)
-            .service(get_v1_embedding)
+            .service(get_embeddings)
     })
     .bind(("0.0.0.0", proxy_server_port))?
     .run()

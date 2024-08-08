@@ -19,7 +19,7 @@ fn serialize_to_byte_string(queries: &[&str]) -> Vec<u8> {
     len_bytes
 }
 
-pub async fn get_embeddings(
+pub async fn get_embeddings_from_triton_server(
     queries: &[&str],
     client: &State<triton_client::Client>,
     config: &State<Config>,
@@ -49,14 +49,14 @@ pub async fn get_embeddings(
     let response: ModelInferResponse =
         client.model_infer(request).await.expect("failed to inference");
 
-    let mut flatten_vectors: Vec<f32> = Vec::with_capacity(batch_size * embedding_size);
+    let mut vectors: Vec<f32> = Vec::with_capacity(batch_size * embedding_size);
 
     for r in &response.raw_output_contents {
         let e: &[f32] = bytemuck::cast_slice::<u8, f32>(r);
-        flatten_vectors.extend_from_slice(e);
+        vectors.extend_from_slice(e);
     }
 
-    flatten_vectors
+    vectors
         .chunks_exact(embedding_size)
         .map(|row: &[f32]| EmbeddingResponse { embedding: row.to_vec() })
         .collect()
