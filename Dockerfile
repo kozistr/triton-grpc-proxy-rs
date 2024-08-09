@@ -3,7 +3,7 @@ FROM clux/muslrust:stable as chef
 USER root
 WORKDIR /app
 
-RUN echo "export RUSTFLAGS=-C target-feature=native" >> /etc/bash.bashrc
+RUN echo "export RUSTFLAGS=-C target-cpu=native" >> /etc/bash.bashrc
 RUN cargo install cargo-chef
 
 FROM chef AS planner
