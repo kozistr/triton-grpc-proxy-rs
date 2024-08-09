@@ -12,7 +12,7 @@ Proxy server for triton gRPC server that inferences embedding model in Rust.
 
 * [`BAAI/bge-m3`](https://huggingface.co/BAAI/bge-m3) is used for an example.
 * It'll convert Pytorch into onnx model with the cls pooling + l2 normalization layers, and save it to `./model_repository/embedding/1/model.onnx`.
-  * if you don't want to add the pooling + l2 normalization layers, then need to change the `config.pbtxt` properly. 
+  * if you don't want to add the pooling + l2 normalization layers, then need to change the `config.pbtxt` properly.
 * Currently, `max_batch_size` is limited to `256` due to OOM. You can change this value to fit your environment.
 
 ```shell
@@ -105,30 +105,28 @@ curl -H "Content-type:application/json" -X POST http://127.0.0.1:8080/v1/embeddi
 * Environment
   * CPU : i7-7700K (not overclocked)
   * GPU : GTX 1060 6 GB
-  * Rust : v1.73.0 stable
+  * Rust : v1.79.0 stable
   * Triton Server : `24-07-py3`
     * backend : onnxruntime-gpu
     * allocator : tcmalloc
-* payload : `[{'query': 'asdf' * 125}] * batch_size`
+  * model : `BAAI/bge-m3` w/ fp32
+* payload : `[{'query': 'asdf' * 126}] * batch_size` (`asdf * 126 == 255 tokens`)
 * stages
-  * request : end-to-end latency (client-side)
   * model : only triton gRPC server latency (preprocess + tokenize + model)
-  * processing : request - model latency
+  * processing : end-to-end latency (service-side)
     * json de/serialization
-    * serialization (byte string, float vector)
+    * payload serialization (byte string, float vector)
     * cast & reshape 2d vectors
 
-| batch size |  request  |   model   | processing |
-|    :---:   |   :---:   |   :---:   |    :---:   |
-|      8     |   27.2 ms |   25.4 ms |    1.8 ms  |
-|     16     |   36.0 ms |   33.7 ms |    2.3 ms  |
-|     32     |   50.6 ms |   47.3 ms |    3.3 ms  |
-|     64     |   90.9 ms |   85.5 ms |    5.4 ms  |
-|    128     |  139.2 ms |  129.9 ms |    9.3 ms  |
-|    256     |  307.4 ms |  287.1 ms |   20.3 ms  |
+| batch size |   model (p90)   | processing (p90) |
+|    :---:   |      :---:      |       :---:      |
+|      8     |   1428.20 ms    |     0.044 ms     |
+|     16     |   2915.01 ms    |     0.051 ms     |
+|     32     |   5626.15 ms    |     0.055 ms     |
 
 ## To-Do
 
+* [x] optimize the processing performance and memory usage
 * [x] add `Dockerfile` and `docker-compose` to easily deploy the servers
 * [x] triton inference server
   * [x] add model converter script.
