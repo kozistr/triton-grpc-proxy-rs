@@ -1,4 +1,4 @@
-FROM clux/muslrust:stable as chef
+FROM clux/muslrust:stable AS chef
 
 USER root
 WORKDIR /app
