@@ -22,14 +22,14 @@ class TritonPythonModel:
                 text=query,
                 padding=True,
                 truncation=True,
-                max_length=512,
+                max_length=8192,
                 return_tensors='np',
             )
 
             inference_response = pb_utils.InferenceResponse(
                 output_tensors=[
                     pb_utils.Tensor(input_name, tokens[input_name].astype(np.int64))
-                    for input_name in ('input_ids', 'attention_mask', 'token_type_ids')
+                    for input_name in ('input_ids', 'attention_mask')
                 ]
             )
 

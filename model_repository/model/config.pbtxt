@@ -33,10 +33,6 @@ ensemble_scheduling {
                 {
                     key: "attention_mask"
                     value: "attention_mask"
-                },
-                {
-                    key: "token_type_ids"
-                    value: "token_type_ids"
                 }
             ]
         },
@@ -51,10 +47,6 @@ ensemble_scheduling {
                 {
                     key: "attention_mask"
                     value: "attention_mask"
-                },
-                {
-                    key: "token_type_ids"
-                    value: "token_type_ids"
                 }
             ]
             output_map {

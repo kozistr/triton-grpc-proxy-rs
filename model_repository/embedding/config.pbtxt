@@ -1,7 +1,7 @@
 name: "embedding"
 platform: "onnxruntime_onnx"
 backend: "onnxruntime"
-default_model_filename: "v1.onnx"
+default_model_filename: "model.onnx"
 max_batch_size: 256
 
 dynamic_batching {
@@ -17,11 +17,6 @@ input [
     },
     {
         name: "attention_mask"
-        data_type: TYPE_INT64
-        dims: [ -1 ]
-    },
-    {
-        name: "token_type_ids"
         data_type: TYPE_INT64
         dims: [ -1 ]
     }
