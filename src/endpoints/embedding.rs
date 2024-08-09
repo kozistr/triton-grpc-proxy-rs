@@ -7,22 +7,22 @@ use triton_client::inference::{ModelInferRequest, ModelInferResponse};
 use crate::configs::Config;
 use crate::models::EmbeddingResponse;
 
-fn serialize_to_byte_string(queries: Vec<String>) -> Vec<u8> {
-    let total_len: usize = queries.iter().map(|query: &String| 4 + query.len()).sum();
-    let mut len_bytes: Vec<u8> = Vec::with_capacity(total_len);
+fn serialize_to_byte_string(queries: &[&str]) -> Vec<u8> {
+    let total_len: usize = queries.iter().map(|query: &&str| 4 + query.len()).sum();
+    let mut payload: Vec<u8> = Vec::with_capacity(total_len);
 
     for query in queries {
-        len_bytes.extend_from_slice(&(query.len() as u32).to_le_bytes());
-        len_bytes.extend_from_slice(query.as_bytes());
+        payload.extend_from_slice(&(query.len() as u32).to_le_bytes());
+        payload.extend_from_slice(query.as_bytes());
     }
 
-    len_bytes
+    payload
 }
 
-pub async fn get_embedding(
-    queries: Vec<String>,
-    client: State<triton_client::Client>,
-    config: State<Config>,
+pub async fn get_embeddings_from_triton_server(
+    queries: &[&str],
+    client: &State<triton_client::Client>,
+    config: &State<Config>,
 ) -> Vec<EmbeddingResponse> {
     let batch_size: usize = queries.len();
     let embedding_size: usize = config.embedding_size;
@@ -30,13 +30,13 @@ pub async fn get_embedding(
     let request: ModelInferRequest = ModelInferRequest {
         model_name: config.model_name.clone(),
         model_version: config.model_version.clone(),
-        id: "".into(),
+        id: String::new(),
         parameters: HashMap::new(),
         inputs: vec![InferInputTensor {
             name: config.input_name.clone(),
-            shape: vec![queries.len() as i64, 1],
+            shape: vec![batch_size as i64, 1],
             parameters: HashMap::new(),
-            datatype: "BYTES".into(),
+            datatype: "BYTES".to_string(),
             contents: None,
         }],
         outputs: vec![InferRequestedOutputTensor {
@@ -49,14 +49,14 @@ pub async fn get_embedding(
     let response: ModelInferResponse =
         client.model_infer(request).await.expect("failed to inference");
 
-    let mut flatten_vectors: Vec<f32> = Vec::with_capacity(batch_size * embedding_size);
+    let mut vectors: Vec<f32> = Vec::with_capacity(batch_size * embedding_size);
 
-    for r in response.raw_output_contents.into_iter() {
-        let e: &[f32] = bytemuck::cast_slice::<u8, f32>(r.as_slice());
-        flatten_vectors.extend_from_slice(e);
+    for r in &response.raw_output_contents {
+        let e: &[f32] = bytemuck::cast_slice::<u8, f32>(r);
+        vectors.extend_from_slice(e);
     }
 
-    flatten_vectors
+    vectors
         .chunks_exact(embedding_size)
         .map(|row: &[f32]| EmbeddingResponse { embedding: row.to_vec() })
         .collect()

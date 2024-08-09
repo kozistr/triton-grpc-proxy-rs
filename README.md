@@ -10,8 +10,9 @@ Proxy server for triton gRPC server that inferences embedding model in Rust.
 
 ### 1. Convert the embedding model to onnx
 
-* [`BAAI/bge-large-en-v1.5`](https://huggingface.co/BAAI/bge-large-en-v1.5) is used for an example.
-* It'll convert Pytorch into onnx model, and save it to `./model_repository/embedding/1/v1.onnx`.
+* [`BAAI/bge-m3`](https://huggingface.co/BAAI/bge-m3) is used for an example.
+* It'll convert Pytorch into onnx model with the cls pooling + l2 normalization layers, and save it to `./model_repository/embedding/1/model.onnx`.
+  * if you don't want to add the pooling + l2 normalization layers, then need to change the `config.pbtxt` properly.
 * Currently, `max_batch_size` is limited to `256` due to OOM. You can change this value to fit your environment.
 
 ```shell
@@ -32,7 +33,7 @@ make run-docker-compose
 * You can also build and run a triton proxy server with the below command.
 
 ```shell
-export RUSTFLAGS="-C target-feature=native"
+export RUSTFLAGS="-C target-cpu=native"
 make server
 ```
 
@@ -43,7 +44,7 @@ make build-docker
 ### Build & run triton inference server only
 
 ```shell
-docker run --gpus all --rm --ipc=host --shm-size=8g --ulimit memlock=-1 --ulimit stack=67108864 -p8000:8000 -p8001:8001 -p8002:8002 -v$(pwd)triton-grpc-proxy-rs/model_repository:/models nvcr.io/nvidia/tritonserver:23.09-py3 bash -c "LD_PRELOAD=/usr/lib/$(uname -m)-linux-gnu/libtcmalloc.so.4:${LD_PRELOAD} && pip install transformers tokenizers && tritonserver --model-repository=/models"
+docker run --gpus all --rm --ipc=host --shm-size=8g --ulimit memlock=-1 --ulimit stack=67108864 -p8000:8000 -p8001:8001 -p8002:8002 -v$(pwd)triton-grpc-proxy-rs/model_repository:/models nvcr.io/nvidia/tritonserver:24.07-py3 bash -c "LD_PRELOAD=/usr/lib/$(uname -m)-linux-gnu/libtcmalloc.so.4:${LD_PRELOAD} && pip install transformers tokenizers && tritonserver --model-repository=/models"
 ```
 
 ## Architecture
@@ -66,7 +67,7 @@ docker run --gpus all --rm --ipc=host --shm-size=8g --ulimit memlock=-1 --ulimit
 * `MODEL_NAME`: model name. default `model`.
 * `INPUT_NAME`: input name. default `text`.
 * `OUTPUT_NAME`: output name. default `embedding`.
-* `EMBEDDING_SIZE`: size of the embedding. default `2048`.
+* `EMBEDDING_SIZE`: size of the embedding. default `1024`.
 
 ### health
 
@@ -104,30 +105,28 @@ curl -H "Content-type:application/json" -X POST http://127.0.0.1:8080/v1/embeddi
 * Environment
   * CPU : i7-7700K (not overclocked)
   * GPU : GTX 1060 6 GB
-  * Rust : v1.73.0 stable
-  * Triton Server : `23-09-py3`
+  * Rust : v1.79.0 stable
+  * Triton Server : `24-07-py3`
     * backend : onnxruntime-gpu
     * allocator : tcmalloc
-* payload : `[{'query': 'asdf' * 125}] * batch_size`
+  * model : `BAAI/bge-m3` w/ fp32
+* payload : `[{'query': 'asdf' * 126}] * batch_size` (`asdf * 126 == 255 tokens`)
 * stages
-  * request : end-to-end latency (client-side)
   * model : only triton gRPC server latency (preprocess + tokenize + model)
-  * processing : request - model latency
+  * processing : end-to-end latency (service-side)
     * json de/serialization
-    * serialization (byte string, float vector)
+    * payload serialization (byte string, float vector)
     * cast & reshape 2d vectors
 
-| batch size |  request  |   model   | processing |
-|    :---:   |   :---:   |   :---:   |    :---:   |
-|      8     |   27.2 ms |   25.4 ms |    1.8 ms  |
-|     16     |   36.0 ms |   33.7 ms |    2.3 ms  |
-|     32     |   50.6 ms |   47.3 ms |    3.3 ms  |
-|     64     |   90.9 ms |   85.5 ms |    5.4 ms  |
-|    128     |  139.2 ms |  129.9 ms |    9.3 ms  |
-|    256     |  307.4 ms |  287.1 ms |   20.3 ms  |
+| batch size |   model (p90)   | processing (p90) |
+|    :---:   |      :---:      |       :---:      |
+|      8     |   1428.20 ms    |     0.044 ms     |
+|     16     |   2915.01 ms    |     0.051 ms     |
+|     32     |   5626.15 ms    |     0.055 ms     |
 
 ## To-Do
 
+* [x] optimize the processing performance and memory usage
 * [x] add `Dockerfile` and `docker-compose` to easily deploy the servers
 * [x] triton inference server
   * [x] add model converter script.

@@ -1,6 +1,6 @@
 [package]
 name = "triton-grpc-proxy"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 license = "Apache-2.0"
 authors = ["kozistr <kozistr@gmail.com>"]
@@ -12,15 +12,15 @@ categories = ["proxy", "triton", "server"]
 keywords = ["proxy", "triton", "grpc", "embedding-server", "restful-api"]
 
 [dependencies]
-tonic = "^0.10"
-bytemuck = "^1.14"
-tokio = { version = "^1.32", features = ["macros", "rt-multi-thread"] }
-ntex = { version = "^0.7", features = ["tokio"] }
-serde = { version = "^1.0", features = ["derive"] }
-env_logger = "^0.10"
-envconfig = "^0.10"
+tonic = "^0"
+bytemuck = "^1"
+tokio = { version = "^1", features = ["macros", "rt-multi-thread"] }
+ntex = { version = "^2", features = ["tokio"] }
+serde = { version = "^1", features = ["derive"] }
+env_logger = "*"
+envconfig = "*"
 triton-client = { git = "https://github.com/octoml/triton-client-rs.git" }
-mimalloc = { version = "^0.1", default-features = false }
+mimalloc = { version = "*", default-features = false }
 
 [build-dependencies]
 

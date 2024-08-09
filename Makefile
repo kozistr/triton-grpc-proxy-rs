@@ -13,9 +13,6 @@ lint:
 build:
 	cargo run --release --bin server
 
-build-pgo:
-	cargo pgo build
-
 build-docker:
 	docker build . -t triton-proxy
 

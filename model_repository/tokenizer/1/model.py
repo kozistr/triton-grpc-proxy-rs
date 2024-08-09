@@ -9,7 +9,7 @@ class TritonPythonModel:
     tokenizer: Optional[PreTrainedTokenizer]
 
     def initialize(self, args: Dict[str, str]) -> None:
-        self.tokenizer = AutoTokenizer.from_pretrained('BAAI/bge-large-en-v1.5')
+        self.tokenizer = AutoTokenizer.from_pretrained('BAAI/bge-m3')
 
     def execute(self, requests) -> "List[List[pb_utils.Tensor]]":
         responses = []
@@ -22,14 +22,14 @@ class TritonPythonModel:
                 text=query,
                 padding=True,
                 truncation=True,
-                max_length=512,
+                max_length=8192,
                 return_tensors='np',
             )
 
             inference_response = pb_utils.InferenceResponse(
                 output_tensors=[
                     pb_utils.Tensor(input_name, tokens[input_name].astype(np.int64))
-                    for input_name in ('input_ids', 'attention_mask', 'token_type_ids')
+                    for input_name in ('input_ids', 'attention_mask')
                 ]
             )
 

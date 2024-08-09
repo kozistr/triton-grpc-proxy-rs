@@ -31,3 +31,5 @@ Cargo.lock
 *.graph
 *.index
 *.onnx
+*.onnx_data
+model_repository/embedding/1/
