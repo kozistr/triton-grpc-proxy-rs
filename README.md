@@ -11,14 +11,13 @@ Proxy server for triton gRPC server that inferences embedding model in Rust.
 ### 1. Convert the embedding model to onnx
 
 * [`BAAI/bge-m3`](https://huggingface.co/BAAI/bge-m3) is used for an example.
-  * It'll convert Pytorch into onnx model, and save it to `./model_repository/embedding/1/v1.onnx`.
-  * Currently, `max_batch_size` is limited to `256` due to OOM. You can change this value to fit your environment.
+* It'll convert Pytorch into onnx model with the cls pooling + l2 normalization layers, and save it to `./model_repository/embedding/1/model.onnx`.
+  * if you don't want to add the pooling + l2 normalization layers, then need to change the `config.pbtxt` properly. 
+* Currently, `max_batch_size` is limited to `256` due to OOM. You can change this value to fit your environment.
 
 ```shell
 python3 convert.py
 ```
-
-Or you can download from the repository [here](https://huggingface.co/BAAI/bge-m3/tree/main/onnx).
 
 ### 2. Run docker-compose
 
@@ -34,7 +33,7 @@ make run-docker-compose
 * You can also build and run a triton proxy server with the below command.
 
 ```shell
-export RUSTFLAGS="-C target-feature=native"
+export RUSTFLAGS="-C target-cpu=native"
 make server
 ```
 
