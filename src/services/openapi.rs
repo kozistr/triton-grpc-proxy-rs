@@ -2,8 +2,8 @@ use std::sync::Arc;
 
 use ntex::util::Bytes;
 use ntex::web::types::{Path, State};
+use ntex::web::ServiceConfig;
 use ntex::{http, web};
-use ntext::web::ServiceConfig;
 use utoipa::OpenApi;
 
 use super::{embedding, metrics};
