@@ -2,11 +2,13 @@
 static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
 use envconfig::Envconfig;
+use metrics_exporter_prometheus::{PrometheusBuilder, PrometheusHandle};
 use ntex::web::middleware::Logger;
 use ntex::web::{get, App, HttpResponse, HttpServer, Responder};
 
 use crate::configs::Config;
-use crate::endpoints::get_embeddings;
+use crate::endpoints::prometheus::prometheus_builer;
+use crate::endpoints::{get_embeddings, get_metrics};
 
 mod configs;
 mod endpoints;
@@ -33,12 +35,18 @@ async fn main() -> std::io::Result<()> {
     .await
     .unwrap();
 
+    let prom_builder: PrometheusBuilder = prometheus_builer().unwrap();
+    let prom_handler: PrometheusHandle =
+        prom_builder.install_recorder().expect("failed to intall recorder");
+
     HttpServer::new(move || {
         App::new()
             .wrap(Logger::default())
             .state(client.clone())
             .state(config.clone())
+            .state(prom_handler.clone())
             .service(health_check)
+            .service(get_metrics)
             .service(get_embeddings)
     })
     .bind(("0.0.0.0", proxy_server_port))?
