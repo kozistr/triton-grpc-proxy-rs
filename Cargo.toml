@@ -21,6 +21,10 @@ env_logger = "*"
 envconfig = "*"
 triton-client = { git = "https://github.com/octoml/triton-client-rs.git" }
 mimalloc = { version = "*", default-features = false }
+metrics = "^0"
+metrics-exporter-prometheus = "^0"
+utoipa = "^4"
+utoipa-swagger-ui = "^7"
 
 [build-dependencies]
 

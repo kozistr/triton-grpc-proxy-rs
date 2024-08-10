@@ -56,6 +56,8 @@ docker run --gpus all --rm --ipc=host --shm-size=8g --ulimit memlock=-1 --ulimit
 
 ## API Specs
 
+* Swagger : `http://localhost:8080/explorer/`
+
 ### Configs
 
 * parse configuration from the env variables.
@@ -83,6 +85,16 @@ content-length: 2
 date: Sun, 08 Oct 2023 06:33:53 GMT
 
 ok
+```
+
+### metrics
+
+get prometheus metrics
+
+* GET `/metrics`
+
+```shell
+curl -i http://127.0.0.1:8080/metrics
 ```
 
 ### embedding
@@ -127,6 +139,8 @@ curl -H "Content-type:application/json" -X POST http://127.0.0.1:8080/v1/embeddi
 ## To-Do
 
 * [x] optimize the processing performance and memory usage
+* [x] support `/metrics` endpoint to get prometheus metrics
+* [x] OpenAPI specifications and Swagger UI
 * [x] add `Dockerfile` and `docker-compose` to easily deploy the servers
 * [x] triton inference server
   * [x] add model converter script.
