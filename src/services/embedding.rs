@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::time::Instant;
 
 use ntex::web::types::{Json, State};
-use ntex::web::{post, Error, HttpResponse};
+use ntex::web::{post, Error, HttpResponse, ServiceConfig};
 use triton_client::inference::model_infer_request::{InferInputTensor, InferRequestedOutputTensor};
 use triton_client::inference::{ModelInferRequest, ModelInferResponse};
 
@@ -70,6 +70,14 @@ async fn get_embeddings_from_triton_server(
         .collect()
 }
 
+#[utoipa::path(
+    post,
+    path = "/v1/embedding",
+    request_body = Vec<QueryRequest>,
+    responses(
+      (status = 200, description = "Get embeddings", body = Vec<EmbeddingResponse>),
+    ),
+  )]
 #[post("/v1/embedding")]
 pub async fn get_embeddings(
     requests: Json<Vec<QueryRequest>>,
@@ -84,4 +92,8 @@ pub async fn get_embeddings(
         get_embeddings_from_triton_server(&queries, &client, &config).await;
 
     Ok(HttpResponse::Ok().json(&responses))
+}
+
+pub fn ntex_config(cfg: &mut ServiceConfig) {
+    cfg.service(get_embeddings);
 }
